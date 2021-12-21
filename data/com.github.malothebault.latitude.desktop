@@ -1,11 +1,11 @@
 [Desktop Entry]
-Name=Escapade
-GenericName=Escapade
+Name=Latitude
+GenericName=Latitude
 Comment=Open and create GPX files. Plan your future adventure.
 Categories=Accessories;
-Exec=com.github.malothebault.escapade
-Icon=com.github.malothebault.escapade
+Exec=com.github.malothebault.latitude
+Icon=com.github.malothebault.latitude
 Terminal=false
 Type=Application
-X-GNOME-Gettext-Domain=com.github.malothebault.escapade
+X-GNOME-Gettext-Domain=com.github.malothebault.latitude
 Keywords=Python;
