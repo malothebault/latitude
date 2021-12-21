@@ -16,9 +16,9 @@ try:
     import teams as tm
     import handler as hd
 except ImportError:
-    import escapade.constants as cn
-    import escapade.teams as tm
-    import escapade.handler as hd
+    import latitude.constants as cn
+    import latitude.teams as tm
+    import latitude.handler as hd
     
 ########### TRANSLATION ##############
 try:

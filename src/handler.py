@@ -17,7 +17,7 @@ gi.require_version('Granite', '1.0')
 try:
     import constants as cn
 except ImportError:
-    import tournoi.constants as cn
+    import latitude.constants as cn
 
 
 class Handler:

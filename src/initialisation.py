@@ -18,9 +18,9 @@ try:
     import listofname as ln
     import brackets as bk
 except ImportError:
-    import tournoi.constants as cn
-    import tournoi.listofname as ln
-    import tournoi.brackets as bk
+    import latitude.constants as cn
+    import latitude.listofname as ln
+    import latitude.brackets as bk
 
 class Initialisation(Gtk.Box):
 

@@ -12,10 +12,10 @@ try:
     import initialisation as it
     import brackets as bk
 except ImportError:
-    import escapade.constants as cn
-    import escapade.welcome as wl
-    import escapade.initialisation as it
-    import escapade.brackets as bk
+    import latitude.constants as cn
+    import latitude.welcome as wl
+    import latitude.initialisation as it
+    import latitude.brackets as bk
 
 class Stack(Gtk.Box):
         

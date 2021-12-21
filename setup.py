@@ -4,10 +4,10 @@ from distutils.core import setup
 
 '''Here we are defining where should be placed each file'''
 install_data = [
-    ('share/applications', ['data/com.github.malothebault.escapade.desktop']),
-    ('share/metainfo', ['data/com.github.malothebault.escapade.appdata.xml']),
-    ('share/icons/hicolor/128x128/apps', ['data/com.github.malothebault.escapade.svg']),
-    ('/usr/share/glib-2.0/schemas', ["data/com.github.malothebault.escapade.gschema.xml"]),
+    ('share/applications', ['data/com.github.malothebault.latitude.desktop']),
+    ('share/metainfo', ['data/com.github.malothebault.latitude.appdata.xml']),
+    ('share/icons/hicolor/128x128/apps', ['data/com.github.malothebault.latitude.svg']),
+    ('/usr/share/glib-2.0/schemas', ["data/com.github.malothebault.latitude.gschema.xml"]),
     ('bin/escapade', ['src/brackets.py']),
     ('bin/escapade', ['src/constants.py']),
     ('bin/escapade', ['src/handler.py']),
@@ -24,13 +24,13 @@ install_data = [
 
 '''Let's go and infuse our application into the system.'''
 setup(
-    name='Escapade',
+    name='Latitude',
     version='0.1',
     author='Malo Thebault',
     description='Open and create GPX files. Plan your future adventure.',
-    url='https://github.com/malothebault/escapade',
+    url='https://github.com/malothebault/latitude',
     license='GNU GPL3',
-    scripts=['com.github.malothebault.escapade'],
+    scripts=['com.github.malothebault.latitude'],
     packages=['src'],
     data_files=install_data
 )
