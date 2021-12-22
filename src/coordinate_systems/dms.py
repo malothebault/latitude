@@ -42,10 +42,13 @@ class DMS(Gtk.Box):
     def __init__(self, parent):
         self.parent = parent
         self._ = _
-        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL)
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         
         self.lat_degree_entry = Gtk.Entry(editable=True, can_focus=True)
+        self.lat_degree_entry.set_max_width_chars(5)
+        self.lat_degree_entry.set_width_chars(5)
         self.lat_degree_entry.set_max_length(3)
+        self.lat_degree_entry.connect("changed", self.digits_only)
         self.pack_start(self.lat_degree_entry, True, False, 0)
 
         self.lat_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)
@@ -54,6 +57,10 @@ class DMS(Gtk.Box):
         self.pack_start(self.lat_degree_label, False, False, 5)
 
         self.lat_minute_entry = Gtk.Entry(editable=True, can_focus=True)
+        self.lat_minute_entry.set_max_width_chars(5)
+        self.lat_minute_entry.set_width_chars(5)
+        self.lat_minute_entry.set_max_length(3)
+        self.lat_minute_entry.connect("changed", self.digits_only)
         self.pack_start(self.lat_minute_entry, True, False, 0)
 
         self.lat_minute_label = Gtk.Label(label="'", halign=Gtk.Align.START)
@@ -62,6 +69,10 @@ class DMS(Gtk.Box):
         self.pack_start(self.lat_minute_label, False, False, 5)
         
         self.lat_second_entry = Gtk.Entry(editable=True, can_focus=True)
+        self.lat_second_entry.set_max_width_chars(5)
+        self.lat_second_entry.set_width_chars(5)
+        self.lat_second_entry.set_max_length(3)
+        self.lat_second_entry.connect("changed", self.digits_only)
         self.pack_start(self.lat_second_entry, True, False, 0)
 
         self.lat_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
@@ -83,6 +94,10 @@ class DMS(Gtk.Box):
         self.pack_start(self.lon_degree_label, False, False, 5)
         
         self.lon_degree_entry = Gtk.Entry(editable=True, can_focus=True)
+        self.lon_degree_entry.set_max_width_chars(5)
+        self.lon_degree_entry.set_width_chars(5)
+        self.lon_degree_entry.set_max_length(3)
+        self.lon_degree_entry.connect("changed", self.digits_only)
         self.pack_start(self.lon_degree_entry, True, False, 0)
 
         self.lon_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)
@@ -91,6 +106,10 @@ class DMS(Gtk.Box):
         self.pack_start(self.lon_degree_label, False, False, 5)
 
         self.lon_minute_entry = Gtk.Entry(editable=True, can_focus=True)
+        self.lon_minute_entry.set_max_width_chars(5)
+        self.lon_minute_entry.set_width_chars(5)
+        self.lon_minute_entry.set_max_length(3)
+        self.lon_minute_entry.connect("changed", self.digits_only)
         self.pack_start(self.lon_minute_entry, True, False, 0)
 
         self.lon_minute_label = Gtk.Label(label="'", halign=Gtk.Align.START)
@@ -99,6 +118,10 @@ class DMS(Gtk.Box):
         self.pack_start(self.lon_minute_label, False, False, 5)
         
         self.lon_second_entry = Gtk.Entry(editable=True, can_focus=True)
+        self.lon_second_entry.set_max_width_chars(5)
+        self.lon_second_entry.set_width_chars(5)
+        self.lon_second_entry.set_max_length(3)
+        self.lon_second_entry.connect("changed", self.digits_only)
         self.pack_start(self.lon_second_entry, True, False, 0)
 
         self.lon_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
@@ -119,3 +142,17 @@ class DMS(Gtk.Box):
         # select_file_button_context = self.select_file_button.get_style_context()
         # select_file_button_context.add_class("suggested-action")
         self.pack_end(self.select_file_button, False, False, 8)
+        
+    # def check_integer(self, widget):
+    #     try:
+    #         val = int(widget.get_text()[-1])
+    #         widget.set_text(str(val))
+    #     except ValueError:
+    #         widget.set_text('')
+
+    def digits_only(self, widget):
+        value = widget.get_text()
+        #Remove non-digits from string
+        value = ''.join([c for c in value if c.isdigit()]) 
+        widget.set_text(value)
+        return True
