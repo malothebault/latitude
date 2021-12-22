@@ -47,16 +47,16 @@ except FileNotFoundError:
 class App:
     '''Here we are defining our Application infos, so we can easily
     use in all our application files'''
-    application_shortname = "latitude"
+    application_shortname = "escapade"
     application_id = "com.github.malothebault.latitude"
     application_name = "Latitude"
     application_description = _('Open and create GPX files. Plan your future adventure.')
     application_version ="0.1"
     app_years = "2021"
-    main_url = "https://github.com/malothebault/latitude"
-    bug_url = "https://github.com/malothebault/latitude/issues/labels/bug"
-    help_url = "https://github.com/malothebault/latitude/issues"
-    translate_url = "https://github.com/malothebault/latitude/issues/labels/translation"
+    main_url = "https://github.com/malothebault/escapade"
+    bug_url = "https://github.com/malothebault/escapade/issues/labels/bug"
+    help_url = "https://github.com/malothebault/escapade/issues"
+    translate_url = "https://github.com/malothebault/escapade/issues/labels/translation"
     about_comments = application_description
     about_license_type = Gtk.License.GPL_3_0
 
