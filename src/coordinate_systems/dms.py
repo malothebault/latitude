@@ -48,7 +48,8 @@ class DMS(Gtk.Box):
         self.lat_degree_entry.set_max_width_chars(5)
         self.lat_degree_entry.set_width_chars(5)
         self.lat_degree_entry.set_max_length(3)
-        self.lat_degree_entry.connect("changed", self.digits_only)
+        self.lat_degree_entry.connect("changed", self.int_only)
+        self.lat_degree_entry.connect("changed", self.max_90)
         self.pack_start(self.lat_degree_entry, True, False, 0)
 
         self.lat_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)
@@ -59,8 +60,9 @@ class DMS(Gtk.Box):
         self.lat_minute_entry = Gtk.Entry(editable=True, can_focus=True)
         self.lat_minute_entry.set_max_width_chars(5)
         self.lat_minute_entry.set_width_chars(5)
-        self.lat_minute_entry.set_max_length(3)
-        self.lat_minute_entry.connect("changed", self.digits_only)
+        self.lat_minute_entry.set_max_length(2)
+        self.lat_minute_entry.connect("changed", self.int_only)
+        self.lat_minute_entry.connect("changed", self.max_60)
         self.pack_start(self.lat_minute_entry, True, False, 0)
 
         self.lat_minute_label = Gtk.Label(label="'", halign=Gtk.Align.START)
@@ -69,10 +71,11 @@ class DMS(Gtk.Box):
         self.pack_start(self.lat_minute_label, False, False, 5)
         
         self.lat_second_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lat_second_entry.set_max_width_chars(5)
-        self.lat_second_entry.set_width_chars(5)
-        self.lat_second_entry.set_max_length(3)
-        self.lat_second_entry.connect("changed", self.digits_only)
+        self.lat_second_entry.set_max_width_chars(7)
+        self.lat_second_entry.set_width_chars(7)
+        self.lat_second_entry.set_max_length(5)
+        self.lat_second_entry.connect("changed", self.float_only)
+        self.lat_second_entry.connect("changed", self.max_60)
         self.pack_start(self.lat_second_entry, True, False, 0)
 
         self.lat_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
@@ -97,7 +100,8 @@ class DMS(Gtk.Box):
         self.lon_degree_entry.set_max_width_chars(5)
         self.lon_degree_entry.set_width_chars(5)
         self.lon_degree_entry.set_max_length(3)
-        self.lon_degree_entry.connect("changed", self.digits_only)
+        self.lon_degree_entry.connect("changed", self.int_only)
+        self.lon_degree_entry.connect("changed", self.max_90)
         self.pack_start(self.lon_degree_entry, True, False, 0)
 
         self.lon_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)
@@ -108,8 +112,9 @@ class DMS(Gtk.Box):
         self.lon_minute_entry = Gtk.Entry(editable=True, can_focus=True)
         self.lon_minute_entry.set_max_width_chars(5)
         self.lon_minute_entry.set_width_chars(5)
-        self.lon_minute_entry.set_max_length(3)
-        self.lon_minute_entry.connect("changed", self.digits_only)
+        self.lon_minute_entry.set_max_length(2)
+        self.lon_minute_entry.connect("changed", self.int_only)
+        self.lon_minute_entry.connect("changed", self.max_60)
         self.pack_start(self.lon_minute_entry, True, False, 0)
 
         self.lon_minute_label = Gtk.Label(label="'", halign=Gtk.Align.START)
@@ -118,10 +123,11 @@ class DMS(Gtk.Box):
         self.pack_start(self.lon_minute_label, False, False, 5)
         
         self.lon_second_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lon_second_entry.set_max_width_chars(5)
-        self.lon_second_entry.set_width_chars(5)
-        self.lon_second_entry.set_max_length(3)
-        self.lon_second_entry.connect("changed", self.digits_only)
+        self.lon_second_entry.set_max_width_chars(7)
+        self.lon_second_entry.set_width_chars(7)
+        self.lon_second_entry.set_max_length(5)
+        self.lon_second_entry.connect("changed", self.float_only)
+        self.lon_second_entry.connect("changed", self.max_60)
         self.pack_start(self.lon_second_entry, True, False, 0)
 
         self.lon_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
@@ -132,27 +138,63 @@ class DMS(Gtk.Box):
         self.lon_combo = Gtk.ComboBoxText(can_focus=False)
         lon_combo_context = self.lon_combo.get_style_context()
         lon_combo_context.add_class("highlighted_text")
-        self.lon_combo.append_text("N")
-        self.lon_combo.append_text("S")
+        self.lon_combo.append_text("W")
+        self.lon_combo.append_text("E")
         self.lon_combo.set_active(0)
         self.pack_start(self.lon_combo, True, False, 1)
         
         self.select_file_button = Gtk.Button(image=Gtk.Image(icon_name="edit-copy", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
-        self.select_file_button.connect("clicked", self.parent.main_file_selection)
+        self.select_file_button.connect("clicked", self.read_dms)
         # select_file_button_context = self.select_file_button.get_style_context()
         # select_file_button_context.add_class("suggested-action")
         self.pack_end(self.select_file_button, False, False, 8)
         
-    # def check_integer(self, widget):
-    #     try:
-    #         val = int(widget.get_text()[-1])
-    #         widget.set_text(str(val))
-    #     except ValueError:
-    #         widget.set_text('')
+    def float_only(self, widget):
+        try:
+            value = widget.get_text()
+            temp = float(value)
+            widget.set_text(value)
+        except ValueError:
+            value = widget.get_text()[:-1]
+            widget.set_text(value)
+        return True
 
-    def digits_only(self, widget):
+    def int_only(self, widget):
         value = widget.get_text()
         #Remove non-digits from string
-        value = ''.join([c for c in value if c.isdigit()]) 
+        value = ''.join([c for c in value if c.isdigit()])
         widget.set_text(value)
         return True
+    
+    def max_90(self, widget):
+        value = widget.get_text()
+        if value == '':
+            return True
+        elif float(value) > 90:
+            value = value[:-1]
+        widget.set_text(value)
+        return True
+    
+    def max_60(self, widget):
+        value = widget.get_text()
+        if value == '':
+            return True
+        elif float(value) > 60:
+            value = value[:-1]
+        widget.set_text(value)
+        return True
+    
+    def read_dms(self, widget):
+        lat_degree = self.lat_degree_entry.get_text()
+        lat_minute = self.lat_minute_entry.get_text()
+        lat_second = self.lat_second_entry.get_text()
+        lat_cardinal = self.lat_combo.get_active_text()
+        lon_degree = self.lon_degree_entry.get_text()
+        lon_minute = self.lon_minute_entry.get_text()
+        lon_second = self.lon_second_entry.get_text()
+        lon_cardinal = self.lon_combo.get_active_text()
+        dms = lat_degree + '°' + lat_minute + "'" + lat_second + '"' + lat_cardinal
+        dms += ','
+        dms += lon_degree + '°' + lon_minute + "'" + lon_second + '"' + lon_cardinal
+        print(dms)
+        return dms
