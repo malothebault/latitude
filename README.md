@@ -1,2 +1,2 @@
 # latitude
-Open and create GPX files. Plan your future adventure. An app designed for elemenary os.
+Simply convert geographic coordinates. An app designed for elemenary os.

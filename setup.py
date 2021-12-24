@@ -8,12 +8,12 @@ install_data = [
     ('share/metainfo', ['data/com.github.malothebault.latitude.appdata.xml']),
     ('share/icons/hicolor/128x128/apps', ['data/com.github.malothebault.latitude.svg']),
     ('/usr/share/glib-2.0/schemas', ["data/com.github.malothebault.latitude.gschema.xml"]),
-    ('bin/escapade', ['src/constants.py']),
-    ('bin/escapade', ['src/coordinate_systems/dms.py']),
-    ('bin/escapade', ['src/handler.py']),
-    ('bin/escapade', ['src/main.py']),
-    ('bin/escapade', ['src/window.py']),
-    ('bin/escapade', ['src/__init__.py']),
+    ('bin/latitude', ['src/constants.py']),
+    ('bin/latitude', ['src/coordinate_systems/dms.py']),
+    ('bin/latitude', ['src/coordinate_systems/dmm.py']),
+    ('bin/latitude', ['src/main.py']),
+    ('bin/latitude', ['src/window.py']),
+    ('bin/latitude', ['src/__init__.py']),
 ]
 
 '''Let's go and infuse our application into the system.'''

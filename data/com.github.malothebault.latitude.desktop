@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Latitude
 GenericName=Latitude
-Comment=Open and create GPX files. Plan your future adventure.
+Comment=Simply convert geographic coordinates
 Categories=Accessories;
 Exec=com.github.malothebault.latitude
 Icon=com.github.malothebault.latitude

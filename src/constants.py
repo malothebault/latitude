@@ -47,10 +47,10 @@ except FileNotFoundError:
 class App:
     '''Here we are defining our Application infos, so we can easily
     use in all our application files'''
-    application_shortname = "escapade"
+    application_shortname = "latitude"
     application_id = "com.github.malothebault.latitude"
     application_name = "Latitude"
-    application_description = _('Open and create GPX files. Plan your future adventure.')
+    application_description = _('Simply convert geographic coordinates')
     application_version ="0.1"
     app_years = "2021"
     main_url = "https://github.com/malothebault/escapade"

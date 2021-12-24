@@ -23,11 +23,12 @@ import os
 import gettext
 import constants as cn
 import dms
+import dmm
 
 gi.require_version('Gtk', '3.0')
 # gi.require_version('Granite', '1.0')
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Granite, Gdk
 
 # import constants as cn
 
@@ -58,8 +59,9 @@ class Window(Gtk.Window):
             title=cn.App.application_name
         )
         self._ = _
+        self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         
-        self.main_file = {"name": "", "path": ""}
+        self.current_focus = 'dms'
         
         context = self.get_style_context()
         context.add_class ("rounded")
@@ -77,6 +79,7 @@ class Window(Gtk.Window):
         self.set_titlebar(self.headerbar)
         
         self.set_border_width(80)
+        self.set_resizable(False)
 
         self.vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL, spacing = 20, homogeneous = False, valign = Gtk.Align.CENTER)
         vbox_context = self.vbox.get_style_context()
@@ -87,15 +90,13 @@ class Window(Gtk.Window):
         select_file_button_context = self.select_file_button.get_style_context()
         select_file_button_context.add_class("suggested-action")
         
-        self.simple_button = dms.DMS(self)
+        self.dms_entry = dms.DMS(self)
+        self.dmm_entry = dmm.DMM(self)
 
-        self.vbox.pack_start(self.select_file_button, False, False, 1)
-        self.vbox.pack_start(self.simple_button, False, False, 1)
+        self.vbox.pack_start(self.dms_entry, False, False, 1)
+        self.vbox.pack_start(self.dmm_entry, False, False, 1)
         
         self.add(self.vbox)
-        
-        
-        
         
     def main_file_selection(self, button):
         dialog = Gtk.FileChooserNative.new(_("Please choose a file"), self, Gtk.FileChooserAction.OPEN, _("Open"), _("Cancel"))

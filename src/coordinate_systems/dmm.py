@@ -38,7 +38,7 @@ except ImportError:
     import latitude.constants as cn
 
 
-class DMS(Gtk.Box):
+class DMM(Gtk.Box):
     def __init__(self, parent):
         self.parent = parent
         self._ = _
@@ -47,7 +47,7 @@ class DMS(Gtk.Box):
         self.lat_degree_entry = Gtk.Entry(editable=True, can_focus=True)
         self.lat_degree_entry.set_max_width_chars(5)
         self.lat_degree_entry.set_width_chars(5)
-        self.lat_degree_entry.set_max_length(3)
+        self.lat_degree_entry.set_max_length(2)
         self.lat_degree_entry.connect("changed", self.is_focus)
         self.lat_degree_entry.connect("changed", self.int_only)
         self.lat_degree_entry.connect("changed", self.max_90)
@@ -59,11 +59,11 @@ class DMS(Gtk.Box):
         self.pack_start(self.lat_degree_label, False, False, 5)
 
         self.lat_minute_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lat_minute_entry.set_max_width_chars(5)
-        self.lat_minute_entry.set_width_chars(5)
-        self.lat_minute_entry.set_max_length(2)
+        self.lat_minute_entry.set_max_width_chars(8)
+        self.lat_minute_entry.set_width_chars(8)
+        self.lat_minute_entry.set_max_length(6)
         self.lat_minute_entry.connect("changed", self.is_focus)
-        self.lat_minute_entry.connect("changed", self.int_only)
+        self.lat_minute_entry.connect("changed", self.float_only)
         self.lat_minute_entry.connect("changed", self.max_60)
         self.pack_start(self.lat_minute_entry, True, False, 0)
 
@@ -71,20 +71,6 @@ class DMS(Gtk.Box):
         alg_label_context = self.lat_minute_label.get_style_context()
         alg_label_context.add_class("h4")
         self.pack_start(self.lat_minute_label, False, False, 5)
-        
-        self.lat_second_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lat_second_entry.set_max_width_chars(7)
-        self.lat_second_entry.set_width_chars(7)
-        self.lat_second_entry.set_max_length(5)
-        self.lat_second_entry.connect("changed", self.is_focus)
-        self.lat_second_entry.connect("changed", self.float_only)
-        self.lat_second_entry.connect("changed", self.max_60)
-        self.pack_start(self.lat_second_entry, True, False, 0)
-
-        self.lat_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
-        alg_label_context = self.lat_second_label.get_style_context()
-        alg_label_context.add_class("h4")
-        self.pack_start(self.lat_second_label, False, False, 5)
         
         self.lat_combo = Gtk.ComboBoxText(can_focus=False)
         lat_combo_context = self.lat_combo.get_style_context()
@@ -103,7 +89,7 @@ class DMS(Gtk.Box):
         self.lon_degree_entry = Gtk.Entry(editable=True, can_focus=True)
         self.lon_degree_entry.set_max_width_chars(5)
         self.lon_degree_entry.set_width_chars(5)
-        self.lon_degree_entry.set_max_length(3)
+        self.lon_degree_entry.set_max_length(2)
         self.lon_degree_entry.connect("changed", self.is_focus)
         self.lon_degree_entry.connect("changed", self.int_only)
         self.lon_degree_entry.connect("changed", self.max_90)
@@ -115,11 +101,11 @@ class DMS(Gtk.Box):
         self.pack_start(self.lon_degree_label, False, False, 5)
 
         self.lon_minute_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lon_minute_entry.set_max_width_chars(5)
-        self.lon_minute_entry.set_width_chars(5)
-        self.lon_minute_entry.set_max_length(2)
+        self.lon_minute_entry.set_max_width_chars(8)
+        self.lon_minute_entry.set_width_chars(8)
+        self.lon_minute_entry.set_max_length(6)
         self.lon_minute_entry.connect("changed", self.is_focus)
-        self.lon_minute_entry.connect("changed", self.int_only)
+        self.lon_minute_entry.connect("changed", self.float_only)
         self.lon_minute_entry.connect("changed", self.max_60)
         self.pack_start(self.lon_minute_entry, True, False, 0)
 
@@ -127,20 +113,6 @@ class DMS(Gtk.Box):
         alg_label_context = self.lon_minute_label.get_style_context()
         alg_label_context.add_class("h4")
         self.pack_start(self.lon_minute_label, False, False, 5)
-        
-        self.lon_second_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lon_second_entry.set_max_width_chars(7)
-        self.lon_second_entry.set_width_chars(7)
-        self.lon_second_entry.set_max_length(5)
-        self.lon_second_entry.connect("changed", self.is_focus)
-        self.lon_second_entry.connect("changed", self.float_only)
-        self.lon_second_entry.connect("changed", self.max_60)
-        self.pack_start(self.lon_second_entry, True, False, 0)
-
-        self.lon_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
-        alg_label_context = self.lon_second_label.get_style_context()
-        alg_label_context.add_class("h4")
-        self.pack_start(self.lon_second_label, False, False, 5)
         
         self.lon_combo = Gtk.ComboBoxText(can_focus=False)
         lon_combo_context = self.lon_combo.get_style_context()
@@ -152,7 +124,7 @@ class DMS(Gtk.Box):
         self.pack_start(self.lon_combo, True, False, 1)
         
         self.select_file_button = Gtk.Button(image=Gtk.Image(icon_name="edit-copy", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
-        self.select_file_button.connect("clicked", self.read_dms)
+        self.select_file_button.connect("clicked", self.read_dmm)
         # select_file_button_context = self.select_file_button.get_style_context()
         # select_file_button_context.add_class("suggested-action")
         self.pack_end(self.select_file_button, False, False, 8)
@@ -192,33 +164,29 @@ class DMS(Gtk.Box):
         widget.set_text(value)
         return True
     
-    def read_dms(self, widget):
+    def read_dmm(self, widget):
         lat_degree = self.lat_degree_entry.get_text()
         lat_minute = self.lat_minute_entry.get_text()
-        lat_second = self.lat_second_entry.get_text()
         lat_cardinal = self.lat_combo.get_active_text()
         lon_degree = self.lon_degree_entry.get_text()
         lon_minute = self.lon_minute_entry.get_text()
-        lon_second = self.lon_second_entry.get_text()
         lon_cardinal = self.lon_combo.get_active_text()
-        dms = lat_degree + '°' + lat_minute + "'" + lat_second + '"' + lat_cardinal
-        dms += ','
-        dms += lon_degree + '°' + lon_minute + "'" + lon_second + '"' + lon_cardinal
-        print(dms)
-        self.parent.clipboard.set_text(dms, -1)
-        return dms
+        dmm = lat_degree + '°' + lat_minute + "'" + lat_second + '"' + lat_cardinal
+        dmm += ','
+        dmm += lon_degree + '°' + lon_minute + "'" + lon_second + '"' + lon_cardinal
+        print(dmm)
+        self.parent.clipboard.set_text(dmm, -1)
+        return dmm
     
     def clear_all(self):
         self.lat_degree_entry.set_text('')
         self.lat_minute_entry.set_text('')
-        self.lat_second_entry.set_text('')
         self.lat_combo.set_active(0)
         self.lon_degree_entry.set_text('')
         self.lon_minute_entry.set_text('')
-        self.lat_second_entry.set_text('')
         self.lon_combo.set_active(0)
         return True
     
     def is_focus(self, widget):
-        self.parent.dmm_entry.clear_all()
+        self.parent.dms_entry.clear_all()
         return True
