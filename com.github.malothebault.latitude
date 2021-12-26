@@ -25,11 +25,11 @@ launch_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 # Update sys.path to include modules
 if launch_dir == "/usr/bin":
-    modules_path = "/usr/share/com.github.malothebault.escapade/escapade"
+    modules_path = "/usr/share/com.github.malothebault.latitude/latitude"
 else:
-    modules_path = launch_dir + "/escapade"
+    modules_path = launch_dir + "/latitude"
 
-# modules_path = "/usr/share/com.github.malothebault.escapade/escapade"
+# modules_path = "/usr/share/com.github.malothebault.latitude/latitude"
 
 sys.path.insert(0, modules_path)
 

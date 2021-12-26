@@ -53,10 +53,10 @@ class App:
     application_description = _('Simply convert geographic coordinates')
     application_version ="0.1"
     app_years = "2021"
-    main_url = "https://github.com/malothebault/escapade"
-    bug_url = "https://github.com/malothebault/escapade/issues/labels/bug"
-    help_url = "https://github.com/malothebault/escapade/issues"
-    translate_url = "https://github.com/malothebault/escapade/issues/labels/translation"
+    main_url = "https://github.com/malothebault/latitude"
+    bug_url = "https://github.com/malothebault/latitude/issues/labels/bug"
+    help_url = "https://github.com/malothebault/latitude/issues"
+    translate_url = "https://github.com/malothebault/latitude/issues/labels/translation"
     about_comments = application_description
     about_license_type = Gtk.License.GPL_3_0
 

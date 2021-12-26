@@ -171,10 +171,9 @@ class DMM(Gtk.Box):
         lon_degree = self.lon_degree_entry.get_text()
         lon_minute = self.lon_minute_entry.get_text()
         lon_cardinal = self.lon_combo.get_active_text()
-        dmm = lat_degree + '°' + lat_minute + "'" + lat_second + '"' + lat_cardinal
+        dmm = lat_degree + '°' + lat_minute + "'" + lat_cardinal
         dmm += ','
-        dmm += lon_degree + '°' + lon_minute + "'" + lon_second + '"' + lon_cardinal
-        print(dmm)
+        dmm += lon_degree + '°' + lon_minute + "'" + lon_cardinal
         self.parent.clipboard.set_text(dmm, -1)
         return dmm
     
@@ -189,4 +188,5 @@ class DMM(Gtk.Box):
     
     def is_focus(self, widget):
         self.parent.dms_entry.clear_all()
+        self.parent.ddd_entry.clear_all()
         return True

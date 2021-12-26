@@ -22,8 +22,9 @@ import locale
 import os
 import gettext
 import constants as cn
-import dms
+import dms 
 import dmm
+import ddd
 
 gi.require_version('Gtk', '3.0')
 # gi.require_version('Granite', '1.0')
@@ -92,9 +93,11 @@ class Window(Gtk.Window):
         
         self.dms_entry = dms.DMS(self)
         self.dmm_entry = dmm.DMM(self)
+        self.ddd_entry = ddd.DDD(self)
 
         self.vbox.pack_start(self.dms_entry, False, False, 1)
         self.vbox.pack_start(self.dmm_entry, False, False, 1)
+        self.vbox.pack_start(self.ddd_entry, False, False, 1)
         
         self.add(self.vbox)
         
