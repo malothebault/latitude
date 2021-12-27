@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 
-from gi.repository import Gtk, Granite, Gdk
+from gi.repository import Gtk, Granite, Gdk, GObject
 import constants as cn
 import gi
 import subprocess
@@ -51,10 +51,18 @@ class DDD(Gtk.Box):
         self.lat_degree_entry.set_max_width_chars(MAX_WIDTH_CHAR)
         self.lat_degree_entry.set_width_chars(WIDTH_CHAR)
         self.lat_degree_entry.set_max_length(MAX_LENGTH)
-        self.lat_degree_entry.connect("changed", self.is_focus)
-        self.lat_degree_entry.connect("changed", self.float_only)
-        self.lat_degree_entry.connect("changed", self.max_90)
+        # self.lat_degree_entry.connect("changed", self.is_focus)
+        # self.lat_degree_entry.connect("changed", self.float_only)
+        # self.lat_degree_entry.connect("insert_text", self.max_90)
+        self.lat_degree_entry.connect("insert_text", self.on_insert_text)
         self.pack_start(self.lat_degree_entry, True, False, 0)
+        self.popover = Gtk.Popover.new(self.lat_degree_entry)
+        label = Gtk.Label(label="Max 90°")
+        label.show_all()
+        self.popover.add(label)
+        self.popover.set_modal(False)
+        self.popover.set_position(Gtk.PositionType.BOTTOM)
+        #self.popover.set_relative_to(self.lat_degree_entry)
 
         self.lat_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)
         alg_label_context = self.lat_degree_label.get_style_context()
@@ -121,12 +129,16 @@ class DDD(Gtk.Box):
         widget.set_text(value)
         return True
     
-    def max_90(self, widget):
+    def max_90(self, widget, result, length, position):
+        print("Hi")
         value = widget.get_text()
+        self.popover.popdown()
         if value == '':
             return True
         elif float(value) > 90:
             value = value[:-1]
+            self.popover.popup()
+            # self.lat_degree_entry.grab_focus()
         widget.set_text(value)
         return True
     
@@ -160,4 +172,51 @@ class DDD(Gtk.Box):
     def is_focus(self, widget):
         self.parent.dms_entry.clear_all()
         self.parent.dmm_entry.clear_all()
+        return True
+    
+    def on_insert_text(self, widget, text, length, position):
+        self.parent.dms_entry.clear_all()
+        self.parent.dmm_entry.clear_all()
+        self.popover.popdown()
+        pos = widget.get_position() 
+        old_text = widget.get_text()
+
+        # Format widget text
+
+        # First we filter digits in insertion text
+        ins_dig = ''.join([c for c in text if c.isdigit()]) 
+        # Second we insert digits at pos, truncate extra-digits
+        new_text = ''.join([old_text[:pos], ins_dig, old_text[pos:]])[:17] 
+        # Third we filter digits in `new_text`, fill the rest with underscores
+        new_dig = ''.join([c for c in new_text if c.isdigit()]).ljust(13, '_')
+        # We are ready to format 
+        new_text = '+{0} {1} {2}-{3}'.format(new_dig[:3], new_dig[3:5], 
+                                               new_dig[5:9], new_dig[9:13]).split('_')[0] 
+
+        # Find the new cursor position
+
+        # We get the number of inserted digits
+        n_dig_ins = len(ins_dig) 
+        # We get the number of digits before
+        n_dig_before = len([c for c in old_text[:pos] if c.isdigit()])
+        # We get the unadjusted cursor position
+        new_pos = pos + n_dig_ins
+
+        # If there was no text in the widget, we added a '+' sign, therefore move cursor
+        new_pos += 1 if not old_text else 0 
+        # Spacers are before digits 4, 6 and 10
+        for i in [4, 6, 10]:
+            # Is there spacers in the inserted text?
+            if n_dig_before < i <= n_dig_before + n_dig_ins: 
+                # If so move cursor
+                new_pos += 1
+
+        if new_text:
+            widget.handler_block_by_func(self.on_insert_text)
+            widget.set_text(new_text)
+            widget.handler_unblock_by_func(self.on_insert_text)
+
+            GObject.idle_add(widget.set_position, new_pos)
+
+        widget.stop_emission("insert_text")
         return True
