@@ -42,6 +42,7 @@ class DDD(Gtk.Box):
     def __init__(self, parent):
         self.parent = parent
         self._ = _
+        self.first_change = True
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         MAX_WIDTH_CHAR = 9
         WIDTH_CHAR = 9
@@ -51,8 +52,8 @@ class DDD(Gtk.Box):
         self.lat_degree_entry.set_max_width_chars(MAX_WIDTH_CHAR)
         self.lat_degree_entry.set_width_chars(WIDTH_CHAR)
         self.lat_degree_entry.set_max_length(MAX_LENGTH)
-        self.lat_degree_entry.connect("changed", self.on_change, float, 90)
-        self.lat_degree_entry.connect("focus_out_event", self.on_focus_out)
+        self.lat_degree_entry.connect("insert_text", self.on_change, float, 90)
+        self.insert_sig = self.lat_degree_entry.connect("focus_out_event", self.on_focus_out)
         self.pack_start(self.lat_degree_entry, True, False, 0)
         self.popover = Gtk.Popover.new(self.lat_degree_entry)
         label = Gtk.Label(label="Max 90°")
@@ -109,57 +110,76 @@ class DDD(Gtk.Box):
         # select_file_button_context.add_class("suggested-action")
         self.pack_end(self.select_file_button, False, False, 8)
         
-    def float_only(self, widget):
-        try:
-            value = widget.get_text()
-            temp = float(value)
-            widget.set_text(value)
-        except ValueError:
-            value = widget.get_text()[:-1]
-            widget.set_text(value)
-        return True
+    # def float_only(self, widget):
+    #     try:
+    #         value = widget.get_text()
+    #         temp = float(value)
+    #         widget.set_text(value)
+    #     except ValueError:
+    #         value = widget.get_text()[:-1]
+    #         widget.set_text(value)
+    #     return True
 
-    def int_only(self, widget):
-        value = widget.get_text()
-        #Remove non-digits from string
-        value = ''.join([c for c in value if c.isdigit()])
-        widget.set_text(value)
-        return True
+    # def int_only(self, widget):
+    #     value = widget.get_text()
+    #     #Remove non-digits from string
+    #     value = ''.join([c for c in value if c.isdigit()])
+    #     widget.set_text(value)
+    #     return True
     
-    def on_change(self, widget, _type, _max):
-        self.parent.dms_entry.clear_all()
-        self.parent.dmm_entry.clear_all()
-        value = widget.get_text()
-        if value == '':
-            return True
+    def on_change(self, widget, new_text, length, position, _type, _max):
+        print(self.first_change)
+        if self.first_change == True:
+            # self.parent.dms_entry.clear_all()
+            # self.parent.dms_entry.first_change = True
+            self.parent.dmm_entry.clear_all()
+            # self.parent.dmm_entry.first_change = True
+        self.first_change = False
+        
+        pos = widget.get_position()
+        old_text = widget.get_text()
+        print(old_text)
+        print(new_text)
+        
+        if new_text == '':
+            return True  
         try:
             if _type == float:
-                temp = float(value)
+                temp = float(old_text + new_text)
+                print("flo")
             elif _type == int:
-                temp = int(value)
+                temp = int(new_text)
+                print("int")
+            new_text = old_text + new_text
         except ValueError:
-            value = value[:-1]
-        if float(value) > _max:
-            value = value[:-1]
-            self.popover.popup()
-        else:
-            self.popover.popdown()
-        widget.handler_block_by_func(self.on_change)
-        widget.set_text(value)
-        widget.handler_unblock_by_func(self.on_change)
+            new_text = old_text
+            print("err")
+        print(new_text)
+        if new_text:
+            if float(new_text) > _max:
+                new_text = old_text
+                self.popover.popup()
+            else:
+                self.popover.popdown()
+            widget.handler_block_by_func(self.on_change)
+            print(new_text)
+            widget.set_text(new_text)
+            widget.handler_unblock_by_func(self.on_change)
+            GObject.idle_add(widget.set_position, pos + 1)
+        widget.emit_stop_by_name("insert_text")
         return True
     
     def on_focus_out(self, *args):
         self.popover.popdown()
     
-    def max_60(self, widget):
-        value = widget.get_text()
-        if value == '':
-            return True
-        elif float(value) > 60:
-            value = value[:-1]
-        widget.set_text(value)
-        return True
+    # def max_60(self, widget):
+    #     value = widget.get_text()
+    #     if value == '':
+    #         return True
+    #     elif float(value) > 60:
+    #         value = value[:-1]
+    #     widget.set_text(value)
+    #     return True
     
     def read_ddd(self, widget):
         lat_degree = self.lat_degree_entry.get_text()
