@@ -73,7 +73,7 @@ class ValidationEntry(Gtk.Entry):
                 temp = int(final_text)
         except ValueError:
             final_text = old_text
-        if new_text:
+        if final_text:
             if float(final_text) > _max:
                 final_text = old_text
                 self.popover.popup()
