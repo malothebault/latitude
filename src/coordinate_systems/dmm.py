@@ -41,7 +41,6 @@ class DMM(Gtk.Box):
     def __init__(self, parent):
         self.parent = parent
         self._ = _
-        self.first_change = True
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         
         self.lat_degree_entry = ventry.ValidationEntry(self, 5, 5, 2, int, 90, 'Max 90°')
@@ -66,7 +65,6 @@ class DMM(Gtk.Box):
         self.lat_combo.append_text("N")
         self.lat_combo.append_text("S")
         self.lat_combo.set_active(0)
-        self.lat_combo.connect("changed", self.is_focus)
         self.pack_start(self.lat_combo, True, False, 1)
         
         self.lon_degree_label = Gtk.Label(label=",", halign=Gtk.Align.CENTER)
@@ -96,14 +94,17 @@ class DMM(Gtk.Box):
         self.lon_combo.append_text("W")
         self.lon_combo.append_text("E")
         self.lon_combo.set_active(0)
-        self.lon_combo.connect("changed", self.is_focus)
         self.pack_start(self.lon_combo, True, False, 1)
         
-        self.select_file_button = Gtk.Button(image=Gtk.Image(icon_name="edit-copy", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
-        self.select_file_button.connect("clicked", self.read_dmm)
-        self.pack_end(self.select_file_button, False, False, 8)
+        self.copy_button = Gtk.Button(image=Gtk.Image(icon_name="edit-copy", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
+        self.copy_button.connect("clicked", self.on_copy)
+        self.pack_end(self.copy_button, False, False, 1)
+        
+        self.validate_button = Gtk.Button(image=Gtk.Image(icon_name="process-completed", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
+        self.validate_button.connect("clicked", self.on_validate)
+        self.pack_end(self.validate_button, False, False, 8)  
     
-    def read_dmm(self, widget):
+    def read_dmm(self):
         lat_degree = self.lat_degree_entry.get_text()
         lat_minute = self.lat_minute_entry.get_text()
         lat_cardinal = self.lat_combo.get_active_text()
@@ -113,8 +114,12 @@ class DMM(Gtk.Box):
         dmm = lat_degree + '°' + lat_minute + "'" + lat_cardinal
         dmm += ','
         dmm += lon_degree + '°' + lon_minute + "'" + lon_cardinal
-        self.parent.clipboard.set_text(dmm, -1)
         return dmm
+    
+    def on_copy(self, widget):
+        dmm = self.read_dmm()
+        print(dmm)
+        self.parent.clipboard.set_text(dmm, -1)
     
     def clear_all(self):
         self.lat_degree_entry.set_text('')
@@ -125,7 +130,7 @@ class DMM(Gtk.Box):
         self.lon_combo.set_active(0)
         return True
 
-    def is_focus(self, *args):
+    def on_validate(self, *args):
         if self.first_change == True:
             self.parent.dms_entry.clear_all()
             self.parent.dms_entry.first_change = True

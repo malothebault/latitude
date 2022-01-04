@@ -58,8 +58,6 @@ class ValidationEntry(Gtk.Entry):
         self.popover.set_position(Gtk.PositionType.BOTTOM)
         
     def on_insert_text(self, widget, new_text, length, position, _type, _max):
-        self.parent.is_focus()
-        
         pos = widget.get_position()
         old_text = widget.get_text()
         
