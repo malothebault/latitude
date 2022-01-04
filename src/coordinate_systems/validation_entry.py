@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from typing import final
 from gi.repository import Gtk, Granite, Gdk, GObject
 import constants as cn
 import gi
@@ -61,28 +62,25 @@ class ValidationEntry(Gtk.Entry):
         
         pos = widget.get_position()
         old_text = widget.get_text()
-        print(old_text)
-        print(new_text)
         
         if new_text == '':
             return True  
         try:
+            final_text = ''.join([old_text[:pos], new_text, old_text[pos:]])
             if _type == float:
-                temp = float(old_text + new_text)
+                temp = float(final_text)
             elif _type == int:
-                temp = int(new_text)
-            new_text = old_text + new_text
+                temp = int(final_text)
         except ValueError:
-            new_text = old_text
+            final_text = old_text
         if new_text:
-            if float(new_text) > _max:
-                new_text = old_text
+            if float(final_text) > _max:
+                final_text = old_text
                 self.popover.popup()
             else:
                 self.popover.popdown()
             widget.handler_block_by_func(self.on_insert_text)
-            print(new_text)
-            widget.set_text(new_text)
+            widget.set_text(final_text)
             widget.handler_unblock_by_func(self.on_insert_text)
             GObject.idle_add(widget.set_position, pos + 1)
         widget.emit_stop_by_name("insert_text")

@@ -126,7 +126,6 @@ class DMM(Gtk.Box):
         return True
 
     def is_focus(self, *args):
-        print(self.first_change)
         if self.first_change == True:
             self.parent.dms_entry.clear_all()
             self.parent.dms_entry.first_change = True
