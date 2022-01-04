@@ -2,12 +2,18 @@
 
 
 from gi.repository import Gtk, Granite, Gdk
-import constants as cn
 import gi
 import subprocess
 import os
 import locale
 import gettext
+
+try:
+    import constants as cn
+    import validation_entry as ventry
+except ImportError:
+    import latitude.constants as cn
+    import latitude.validation_entry as ventry
 
 ########### TRANSLATION ##############
 try:
@@ -31,26 +37,14 @@ except FileNotFoundError:
 gi.require_version('Gtk', '3.0')
 gi.require_version('Granite', '1.0')
 
-
-try:
-    import constants as cn
-except ImportError:
-    import latitude.constants as cn
-
-
 class DMS(Gtk.Box):
     def __init__(self, parent):
         self.parent = parent
         self._ = _
+        self.first_change = True
         Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         
-        self.lat_degree_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lat_degree_entry.set_max_width_chars(5)
-        self.lat_degree_entry.set_width_chars(5)
-        self.lat_degree_entry.set_max_length(3)
-        self.lat_degree_entry.connect("changed", self.is_focus)
-        self.lat_degree_entry.connect("changed", self.int_only)
-        self.lat_degree_entry.connect("changed", self.max_90)
+        self.lat_degree_entry = ventry.ValidationEntry(self, 5, 5, 2, int, 90, 'Max 90°')
         self.pack_start(self.lat_degree_entry, True, False, 0)
 
         self.lat_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)
@@ -58,13 +52,7 @@ class DMS(Gtk.Box):
         alg_label_context.add_class("h4")
         self.pack_start(self.lat_degree_label, False, False, 5)
 
-        self.lat_minute_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lat_minute_entry.set_max_width_chars(5)
-        self.lat_minute_entry.set_width_chars(5)
-        self.lat_minute_entry.set_max_length(2)
-        self.lat_minute_entry.connect("changed", self.is_focus)
-        self.lat_minute_entry.connect("changed", self.int_only)
-        self.lat_minute_entry.connect("changed", self.max_60)
+        self.lat_minute_entry = ventry.ValidationEntry(self, 5, 5, 2, int, 60, "Max 60'")
         self.pack_start(self.lat_minute_entry, True, False, 0)
 
         self.lat_minute_label = Gtk.Label(label="'", halign=Gtk.Align.START)
@@ -72,13 +60,7 @@ class DMS(Gtk.Box):
         alg_label_context.add_class("h4")
         self.pack_start(self.lat_minute_label, False, False, 5)
         
-        self.lat_second_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lat_second_entry.set_max_width_chars(7)
-        self.lat_second_entry.set_width_chars(7)
-        self.lat_second_entry.set_max_length(5)
-        self.lat_second_entry.connect("changed", self.is_focus)
-        self.lat_second_entry.connect("changed", self.float_only)
-        self.lat_second_entry.connect("changed", self.max_60)
+        self.lat_second_entry = ventry.ValidationEntry(self, 7, 7, 5, float, 60, 'Max 60"')
         self.pack_start(self.lat_second_entry, True, False, 0)
 
         self.lat_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
@@ -100,27 +82,15 @@ class DMS(Gtk.Box):
         alg_label_context.add_class("h4")
         self.pack_start(self.lon_degree_label, False, False, 5)
         
-        self.lon_degree_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lon_degree_entry.set_max_width_chars(5)
-        self.lon_degree_entry.set_width_chars(5)
-        self.lon_degree_entry.set_max_length(3)
-        self.lon_degree_entry.connect("changed", self.is_focus)
-        self.lon_degree_entry.connect("changed", self.int_only)
-        self.lon_degree_entry.connect("changed", self.max_90)
+        self.lon_degree_entry = ventry.ValidationEntry(self, 5, 5, 2, int, 90, 'Max 90°')
         self.pack_start(self.lon_degree_entry, True, False, 0)
 
         self.lon_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)
         alg_label_context = self.lon_degree_label.get_style_context()
         alg_label_context.add_class("h4")
         self.pack_start(self.lon_degree_label, False, False, 5)
-
-        self.lon_minute_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lon_minute_entry.set_max_width_chars(5)
-        self.lon_minute_entry.set_width_chars(5)
-        self.lon_minute_entry.set_max_length(2)
-        self.lon_minute_entry.connect("changed", self.is_focus)
-        self.lon_minute_entry.connect("changed", self.int_only)
-        self.lon_minute_entry.connect("changed", self.max_60)
+        
+        self.lon_minute_entry = ventry.ValidationEntry(self, 5, 5, 2, int, 60, "Max 60'")
         self.pack_start(self.lon_minute_entry, True, False, 0)
 
         self.lon_minute_label = Gtk.Label(label="'", halign=Gtk.Align.START)
@@ -128,13 +98,7 @@ class DMS(Gtk.Box):
         alg_label_context.add_class("h4")
         self.pack_start(self.lon_minute_label, False, False, 5)
         
-        self.lon_second_entry = Gtk.Entry(editable=True, can_focus=True)
-        self.lon_second_entry.set_max_width_chars(7)
-        self.lon_second_entry.set_width_chars(7)
-        self.lon_second_entry.set_max_length(5)
-        self.lon_second_entry.connect("changed", self.is_focus)
-        self.lon_second_entry.connect("changed", self.float_only)
-        self.lon_second_entry.connect("changed", self.max_60)
+        self.lon_second_entry = ventry.ValidationEntry(self, 7, 7, 5, float, 60, 'Max 60"')
         self.pack_start(self.lon_second_entry, True, False, 0)
 
         self.lon_second_label = Gtk.Label(label='"', halign=Gtk.Align.START)
@@ -156,41 +120,6 @@ class DMS(Gtk.Box):
         # select_file_button_context = self.select_file_button.get_style_context()
         # select_file_button_context.add_class("suggested-action")
         self.pack_end(self.select_file_button, False, False, 8)
-        
-    def float_only(self, widget):
-        try:
-            value = widget.get_text()
-            temp = float(value)
-            widget.set_text(value)
-        except ValueError:
-            value = widget.get_text()[:-1]
-            widget.set_text(value)
-        return True
-
-    def int_only(self, widget):
-        value = widget.get_text()
-        #Remove non-digits from string
-        value = ''.join([c for c in value if c.isdigit()])
-        widget.set_text(value)
-        return True
-    
-    def max_90(self, widget):
-        value = widget.get_text()
-        if value == '':
-            return True
-        elif float(value) > 90:
-            value = value[:-1]
-        widget.set_text(value)
-        return True
-    
-    def max_60(self, widget):
-        value = widget.get_text()
-        if value == '':
-            return True
-        elif float(value) > 60:
-            value = value[:-1]
-        widget.set_text(value)
-        return True
     
     def read_dms(self, widget):
         lat_degree = self.lat_degree_entry.get_text()
@@ -215,11 +144,16 @@ class DMS(Gtk.Box):
         self.lat_combo.set_active(0)
         self.lon_degree_entry.set_text('')
         self.lon_minute_entry.set_text('')
-        self.lat_second_entry.set_text('')
+        self.lon_second_entry.set_text('')
         self.lon_combo.set_active(0)
         return True
-    
-    def is_focus(self, widget):
-        self.parent.dmm_entry.clear_all()
-        self.parent.ddd_entry.clear_all()
+
+    def is_focus(self, *args):
+        print(self.first_change)
+        if self.first_change == True:
+            self.parent.dmm_entry.clear_all()
+            self.parent.dmm_entry.first_change = True
+            self.parent.ddd_entry.clear_all()
+            self.parent.ddd_entry.first_change = True
+        self.first_change = False
         return True
