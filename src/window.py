@@ -69,7 +69,6 @@ class Window(Gtk.Window):
         headerbar_context.add_class("flat")
         self.headerbar.set_show_close_button(True)
         self.headerbar.props.title = cn.App.application_name
-        #self.headerbar.set_custom_title("Latitude")
         self.set_titlebar(self.headerbar)
         
         self.set_border_width(80)
