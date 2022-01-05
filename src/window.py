@@ -25,6 +25,7 @@ import constants as cn
 import dms 
 import dmm
 import ddd
+import converter
 
 gi.require_version('Gtk', '3.0')
 # gi.require_version('Granite', '1.0')
@@ -55,14 +56,9 @@ except FileNotFoundError:
 class Window(Gtk.Window):
 
     def __init__(self):
-        Gtk.Window.__init__(
-            self, 
-            title=cn.App.application_name
-        )
+        Gtk.Window.__init__(self, title=cn.App.application_name)
         self._ = _
         self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-        
-        self.current_focus = 'dms'
         
         context = self.get_style_context()
         context.add_class ("rounded")
@@ -91,9 +87,15 @@ class Window(Gtk.Window):
         select_file_button_context = self.select_file_button.get_style_context()
         select_file_button_context.add_class("suggested-action")
         
+        self.converter = converter.Converter()
+        
         self.dms_entry = dms.DMS(self)
         self.dmm_entry = dmm.DMM(self)
         self.ddd_entry = ddd.DDD(self)
+        
+        self.dms_entry.validate_button.connect("clicked", self.on_validate_dms)
+        self.dmm_entry.validate_button.connect("clicked", self.on_validate_dmm)
+        self.ddd_entry.validate_button.connect("clicked", self.on_validate_ddd)
 
         self.vbox.pack_start(self.dms_entry, False, False, 1)
         self.vbox.pack_start(self.dmm_entry, False, False, 1)
@@ -109,3 +111,24 @@ class Window(Gtk.Window):
                 print("Hello")
 
         dialog.destroy()
+        
+    def on_validate_dms(self, *args):
+        dmm = self.converter.dms2dmm(self.dms_entry.read())
+        self.dmm_entry.write(dmm)
+        ddd = self.converter.dms2ddd(self.dms_entry.read())
+        self.ddd_entry.write(ddd)
+        return True
+    
+    def on_validate_dmm(self, *args):
+        dms = self.converter.dmm2dms(self.dmm_entry.read())
+        self.dms_entry.write(dms)
+        ddd = self.converter.dmm2ddd(self.dmm_entry.read())
+        self.ddd_entry.write(ddd)
+        return True
+    
+    def on_validate_ddd(self, *args):
+        dms = self.converter.ddd2dms(self.ddd_entry.read())
+        self.dms_entry.write(dms)
+        dmm = self.converter.ddd2dmm(self.ddd_entry.read())
+        self.dmm_entry.write(dmm)
+        return True

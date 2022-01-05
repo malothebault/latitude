@@ -39,9 +39,9 @@ gi.require_version('Granite', '1.0')
 
 class DMS(Gtk.Box):
     def __init__(self, parent):
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         self.parent = parent
         self._ = _
-        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         
         self.lat_degree_entry = ventry.ValidationEntry(self, 5, 5, 2, int, 90, 'Max 90°')
         self.pack_start(self.lat_degree_entry, True, False, 0)
@@ -107,8 +107,8 @@ class DMS(Gtk.Box):
         self.lon_combo = Gtk.ComboBoxText(can_focus=False)
         lon_combo_context = self.lon_combo.get_style_context()
         lon_combo_context.add_class("highlighted_text")
-        self.lon_combo.append_text("W")
         self.lon_combo.append_text("E")
+        self.lon_combo.append_text("W")
         self.lon_combo.set_active(0)
         self.pack_start(self.lon_combo, True, False, 1)
         
@@ -117,27 +117,41 @@ class DMS(Gtk.Box):
         self.pack_end(self.copy_button, False, False, 1)
         
         self.validate_button = Gtk.Button(image=Gtk.Image(icon_name="process-completed", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
-        self.validate_button.connect("clicked", self.on_validate)
+        #self.validate_button.connect("clicked", self.on_validate)
         self.pack_end(self.validate_button, False, False, 8)        
     
-    def read_dms(self):
-        lat_degree = self.lat_degree_entry.get_text()
-        lat_minute = self.lat_minute_entry.get_text()
-        lat_second = self.lat_second_entry.get_text()
-        lat_cardinal = self.lat_combo.get_active_text()
-        lon_degree = self.lon_degree_entry.get_text()
-        lon_minute = self.lon_minute_entry.get_text()
-        lon_second = self.lon_second_entry.get_text()
-        lon_cardinal = self.lon_combo.get_active_text()
-        dms = lat_degree + '°' + lat_minute + "'" + lat_second + '"' + lat_cardinal
-        dms += ','
-        dms += lon_degree + '°' + lon_minute + "'" + lon_second + '"' + lon_cardinal
+    def read(self):
+        dms = {}
+        dms['lat'] = (int(self.lat_degree_entry.get_text()),
+                      int(self.lat_minute_entry.get_text()),
+                      float(self.lat_second_entry.get_text()),
+                      self.lat_combo.get_active_text())
+        dms['lon'] = (int(self.lon_degree_entry.get_text()),
+                      int(self.lon_minute_entry.get_text()),
+                      float(self.lon_second_entry.get_text()),
+                      self.lon_combo.get_active_text())
         return dms
     
+    def write(self, dms):
+        lat = dms.get('lat')
+        lon = dms.get('lon')
+        self.lat_degree_entry.set_text(str(lat[0]))
+        self.lat_minute_entry.set_text(str(lat[1]))
+        self.lat_second_entry.set_text(str(lat[2]))
+        self.lat_combo.set_active(lat[3] == 'S')
+        self.lon_degree_entry.set_text(str(lon[0]))
+        self.lon_minute_entry.set_text(str(lon[1]))
+        self.lon_second_entry.set_text(str(lon[2]))
+        self.lon_combo.set_active(lon[3] == 'W')
+        return True
+    
     def on_copy(self, widget):
-        dms = self.read_dms()
-        print(dms)
-        self.parent.clipboard.set_text(dms, -1)
+        dms = self.read()
+        lat = dms.get('lat')
+        lon = dms.get('lon')
+        txt = f'''{lat[0]}°{lat[1]}'{lat[2]}"{lat[3]},{lon[0]}°{lon[1]}'{lon[2]}"{lon[3]}'''
+        print(txt)
+        self.parent.clipboard.set_text(txt, -1)
     
     def clear_all(self):
         self.lat_degree_entry.set_text('')
@@ -148,13 +162,4 @@ class DMS(Gtk.Box):
         self.lon_minute_entry.set_text('')
         self.lon_second_entry.set_text('')
         self.lon_combo.set_active(0)
-        return True
-
-    def on_validate(self, *args):
-        if self.first_change == True:
-            self.parent.dmm_entry.clear_all()
-            self.parent.dmm_entry.first_change = True
-            self.parent.ddd_entry.clear_all()
-            self.parent.ddd_entry.first_change = True
-        self.first_change = False
         return True

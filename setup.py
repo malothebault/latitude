@@ -9,6 +9,7 @@ install_data = [
     ('share/icons/hicolor/128x128/apps', ['data/com.github.malothebault.latitude.svg']),
     ('/usr/share/glib-2.0/schemas', ["data/com.github.malothebault.latitude.gschema.xml"]),
     ('bin/latitude', ['src/constants.py']),
+    ('bin/latitude', ['src/coordinate_systems/converter.py']),
     ('bin/latitude', ['src/coordinate_systems/dms.py']),
     ('bin/latitude', ['src/coordinate_systems/dmm.py']),
     ('bin/latitude', ['src/coordinate_systems/ddd.py']),

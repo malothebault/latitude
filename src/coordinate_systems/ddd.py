@@ -39,9 +39,9 @@ gi.require_version('Granite', '1.0')
 
 class DDD(Gtk.Box):
     def __init__(self, parent):
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         self.parent = parent
         self._ = _
-        Gtk.Box.__init__(self, orientation = Gtk.Orientation.HORIZONTAL, halign = Gtk.Align.START)
         
         self.lat_degree_entry = ventry.ValidationEntry(self, 9, 9, 7, float, 90, 'Max 90°')
         self.pack_start(self.lat_degree_entry, True, False, 0)
@@ -75,8 +75,8 @@ class DDD(Gtk.Box):
         self.lon_combo = Gtk.ComboBoxText(can_focus=False)
         lon_combo_context = self.lon_combo.get_style_context()
         lon_combo_context.add_class("highlighted_text")
-        self.lon_combo.append_text("W")
         self.lon_combo.append_text("E")
+        self.lon_combo.append_text("W")
         self.lon_combo.set_active(0)
         self.pack_start(self.lon_combo, True, False, 1)
         
@@ -85,37 +85,36 @@ class DDD(Gtk.Box):
         self.pack_end(self.copy_button, False, False, 1)
         
         self.validate_button = Gtk.Button(image=Gtk.Image(icon_name="process-completed", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
-        self.validate_button.connect("clicked", self.on_validate)
         self.pack_end(self.validate_button, False, False, 8)  
     
-    def read_ddd(self):
-        lat_degree = self.lat_degree_entry.get_text()
-        lat_cardinal = self.lat_combo.get_active_text()
-        lon_degree = self.lon_degree_entry.get_text()
-        lon_cardinal = self.lon_combo.get_active_text()
-        ddd = lat_degree + '°' + lat_cardinal
-        ddd += ','
-        ddd += lon_degree + '°' + lon_cardinal
-        self.parent.clipboard.set_text(ddd, -1)
+    def read(self):
+        ddd = {}
+        ddd['lat'] = (float(self.lat_degree_entry.get_text()),
+                      self.lat_combo.get_active_text())
+        ddd['lon'] = (float(self.lon_degree_entry.get_text()),
+                      self.lon_combo.get_active_text())
         return ddd
     
+    def write(self, ddd):
+        lat = ddd.get('lat')
+        lon = ddd.get('lon')
+        self.lat_degree_entry.set_text(str(lat[0]))
+        self.lat_combo.set_active(lat[1] == 'S')
+        self.lon_degree_entry.set_text(str(lon[0]))
+        self.lon_combo.set_active(lon[1] == 'W')
+        return True
+    
     def on_copy(self, widget):
-        ddd = self.read_ddd()
-        print(ddd)
-        self.parent.clipboard.set_text(ddd, -1)
+        dmm = self.read()
+        lat = dmm.get('lat')
+        lon = dmm.get('lon')
+        txt = f'''{lat[0]}°{lat[1]},{lon[0]}°{lon[1]}'''
+        print(txt)
+        self.parent.clipboard.set_text(txt, -1)
     
     def clear_all(self):
         self.lat_degree_entry.set_text('')
         self.lat_combo.set_active(0)
         self.lon_degree_entry.set_text('')
         self.lon_combo.set_active(0)
-        return True
-    
-    def on_validate(self, *args):
-        if self.first_change == True:
-            self.parent.dms_entry.clear_all()
-            self.parent.dms_entry.first_change = True
-            self.parent.dmm_entry.clear_all()
-            self.parent.dmm_entry.first_change = True
-        self.first_change = False
         return True
