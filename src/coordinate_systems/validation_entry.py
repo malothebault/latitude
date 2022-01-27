@@ -69,6 +69,7 @@ class ValidationEntry(Gtk.Entry):
                 temp = float(final_text)
             elif _type == int:
                 temp = int(final_text)
+            pos += 1 # increment the position of the cursor if a character is inserted
         except ValueError:
             final_text = old_text
         if final_text:
@@ -80,7 +81,7 @@ class ValidationEntry(Gtk.Entry):
             widget.handler_block_by_func(self.on_insert_text)
             widget.set_text(final_text)
             widget.handler_unblock_by_func(self.on_insert_text)
-            GObject.idle_add(widget.set_position, pos + 1)
+            GObject.idle_add(widget.set_position, pos)
         widget.emit_stop_by_name("insert_text")
         return True
     
