@@ -39,7 +39,13 @@ except ImportError:
 
 
 class ValidationEntry(Gtk.Entry):
-    def __init__(self, parent, max_width_char, width_char, max_length, _type, _max, popover_label = 'Exceeding maximum value'):
+    def __init__(self,
+                 parent,
+                 max_width_char,
+                 width_char,
+                 max_length,
+                 _type, _max,
+                 popover_label = 'Exceeding maximum value'):
         Gtk.Entry.__init__(self, editable=True, can_focus=True)
         self._ = _
         self.parent = parent
@@ -62,7 +68,6 @@ class ValidationEntry(Gtk.Entry):
     def on_insert_text(self, widget, new_text, length, position, _type, _max):
         pos = widget.get_position()
         old_text = widget.get_text()
-        
         if new_text == '':
             return True  
         try:
@@ -89,62 +94,57 @@ class ValidationEntry(Gtk.Entry):
     
     def on_delete_text(self, widget, start_pos, end_pos, _type, _max):
         pos = widget.get_position()
-        old_text = widget.get_text()
-        print(pos)
-        print(old_text)
-        
-        # if new_text == '':
-        #     return True  
-        # try:
-        #     final_text = ''.join([old_text[:pos], new_text, old_text[pos:]])
-        #     if _type == float:
-        #         temp = float(final_text)
-        #     elif _type == int:
-        #         temp = int(final_text)
-        #     pos += 1 # increment the position of the cursor if a character is inserted
-        # except ValueError:
-        #     final_text = old_text
-        # if final_text:
-        #     if float(final_text) > _max:
-        #         final_text = old_text
-        #         self.popover.popup()
-        #     else:
-        #         self.popover.popdown()
-        #     widget.handler_block_by_func(self.on_delete_text)
-        #     widget.set_text(final_text)
-        #     widget.handler_unblock_by_func(self.on_delete_text)
-        #     GObject.idle_add(widget.set_position, pos)
-        # widget.emit_stop_by_name("delete_from_cursor")
+        old_text = widget.get_text()       
+        if old_text == '':
+            return True  
+        try:
+            final_text = ''.join([old_text[:pos], old_text[pos + 1:]])
+            if _type == float:
+                temp = float(final_text)
+            elif _type == int:
+                temp = int(final_text)
+        except ValueError:
+            final_text = old_text
+        if final_text:
+            if float(final_text) > _max:
+                final_text = old_text
+                #Need to block the deletion
+                self.popover.popup()
+                print("here")
+            else:
+                self.popover.popdown()
+                widget.handler_block_by_func(self.on_insert_text)
+                widget.delete_text(pos, pos)
+                widget.handler_unblock_by_func(self.on_insert_text)
+                GObject.idle_add(widget.set_position, pos)
+        widget.emit_stop_by_name("backspace")
         return True
     
     def on_backspace(self, widget, _type, _max):
         pos = widget.get_position()
         old_text = widget.get_text()
-        print(pos)
-        print(old_text)
-        
-        # if new_text == '':
-        #     return True  
-        # try:
-        #     final_text = ''.join([old_text[:pos], new_text, old_text[pos:]])
-        #     if _type == float:
-        #         temp = float(final_text)
-        #     elif _type == int:
-        #         temp = int(final_text)
-        #     pos += 1 # increment the position of the cursor if a character is inserted
-        # except ValueError:
-        #     final_text = old_text
-        # if final_text:
-        #     if float(final_text) > _max:
-        #         final_text = old_text
-        #         self.popover.popup()
-        #     else:
-        #         self.popover.popdown()
-        #     widget.handler_block_by_func(self.on_delete_text)
-        #     widget.set_text(final_text)
-        #     widget.handler_unblock_by_func(self.on_delete_text)
-        #     GObject.idle_add(widget.set_position, pos)
-        # widget.emit_stop_by_name("delete_from_cursor")
+        if old_text == '':
+            return True  
+        try:
+            final_text = ''.join([old_text[:pos - 1], old_text[pos:]])
+            if _type == float:
+                temp = float(final_text)
+            elif _type == int:
+                temp = int(final_text)
+            pos -= 1
+        except ValueError:
+            final_text = old_text
+        if final_text:
+            if float(final_text) > _max:
+                final_text = old_text
+                self.popover.popup()
+            else:
+                self.popover.popdown()
+                widget.handler_block_by_func(self.on_insert_text)
+                widget.delete_text(pos, pos + 1)
+                widget.handler_unblock_by_func(self.on_insert_text)
+                GObject.idle_add(widget.set_position, pos)
+        widget.emit_stop_by_name("backspace")
         return True
     
     def on_focus_out(self, *args):
