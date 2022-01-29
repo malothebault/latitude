@@ -129,7 +129,6 @@ class ValidationEntry(Gtk.Entry):
             return True
         try:
             final_text = ''.join([old_text[:pos - 1], old_text[pos:]])
-            print(final_text)
             if _type == float:
                 temp = float(final_text)
             elif _type == int:
