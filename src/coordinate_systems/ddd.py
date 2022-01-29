@@ -64,7 +64,7 @@ class DDD(Gtk.Box):
         alg_label_context.add_class("h4")
         self.pack_start(self.lon_degree_label, False, False, 5)
         
-        self.lon_degree_entry = ventry.ValidationEntry(self, 9, 9, 7, float, 90, 'Max 90°')
+        self.lon_degree_entry = ventry.ValidationEntry(self, 9, 9, 7, float, 180, 'Max 180°')
         self.pack_start(self.lon_degree_entry, True, False, 0)
 
         self.lon_degree_label = Gtk.Label(label="°", halign=Gtk.Align.START)

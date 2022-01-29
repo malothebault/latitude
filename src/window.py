@@ -26,6 +26,7 @@ import dms
 import dmm
 import ddd
 import converter
+import webbrowser
 
 gi.require_version('Gtk', '3.0')
 # gi.require_version('Granite', '1.0')
@@ -77,11 +78,15 @@ class Window(Gtk.Window):
         self.vbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL, spacing = 20, homogeneous = False, valign = Gtk.Align.CENTER)
         vbox_context = self.vbox.get_style_context()
         vbox_context.add_class("main_content")
+        
+        self.hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL, spacing = 20, homogeneous = False, halign = Gtk.Align.END)
 
-        self.select_file_button = Gtk.Button(label=_("Select File"),image=Gtk.Image(icon_name="document-open-symbolic", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
-        self.select_file_button.connect("clicked", self.main_file_selection)
-        select_file_button_context = self.select_file_button.get_style_context()
-        select_file_button_context.add_class("suggested-action")
+        self.view_on_maps_button = Gtk.Button(label=_("See on the map"),image=Gtk.Image(icon_name="library-places", icon_size=Gtk.IconSize.BUTTON), always_show_image=True, can_focus=False)
+        self.view_on_maps_button.connect("clicked", self.on_map_view)
+        view_on_maps_button_context = self.view_on_maps_button.get_style_context()
+        view_on_maps_button_context.add_class("suggested-action")
+        self.view_on_maps_button.set_margin_top(15)
+        self.hbox.pack_end(self.view_on_maps_button, False, False, 1)
         
         self.converter = converter.Converter()
         
@@ -96,18 +101,18 @@ class Window(Gtk.Window):
         self.vbox.pack_start(self.dms_entry, False, False, 1)
         self.vbox.pack_start(self.dmm_entry, False, False, 1)
         self.vbox.pack_start(self.ddd_entry, False, False, 1)
+        self.vbox.pack_end(self.hbox, False, False, 1)
         
         self.add(self.vbox)
         
-    def main_file_selection(self, button):
-        dialog = Gtk.FileChooserNative.new(_("Please choose a file"), self, Gtk.FileChooserAction.OPEN, _("Open"), _("Cancel"))
-        response = dialog.run()
+    def on_map_view(self, button):
+        ddd = self.ddd_entry.read()
+        link = f"""{'-' if ddd.get('lat')[1] == 'S' else ''}{ddd.get('lat')[0]},{'-' if ddd.get('lon')[1] == 'W' else ''}{ddd.get('lon')[0]}"""
+        webbrowser.open_new_tab(
+                f"https://www.google.com/maps/@{link},10z"
+            )
+        return True
 
-        if response == Gtk.ResponseType.ACCEPT:
-                print("Hello")
-
-        dialog.destroy()
-        
     def on_validate_dms(self, *args):
         dmm = self.converter.dms2dmm(self.dms_entry.read())
         self.dmm_entry.write(dmm)
