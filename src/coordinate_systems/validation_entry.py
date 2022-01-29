@@ -97,6 +97,9 @@ class ValidationEntry(Gtk.Entry):
         old_text = widget.get_text()       
         if old_text == '':
             return True  
+        elif old_text == '.':
+            widget.delete_text(pos, pos + 1)
+            return True
         try:
             final_text = ''.join([old_text[:pos], old_text[pos + 1:]])
             if _type == float:
@@ -108,16 +111,12 @@ class ValidationEntry(Gtk.Entry):
         if final_text:
             if float(final_text) > _max:
                 final_text = old_text
-                #Need to block the deletion
                 self.popover.popup()
-                print("here")
             else:
                 self.popover.popdown()
-                widget.handler_block_by_func(self.on_insert_text)
-                widget.delete_text(pos, pos)
-                widget.handler_unblock_by_func(self.on_insert_text)
+                widget.delete_text(pos, pos + 1)
                 GObject.idle_add(widget.set_position, pos)
-        widget.emit_stop_by_name("backspace")
+        widget.emit_stop_by_name("delete_from_cursor")
         return True
     
     def on_backspace(self, widget, _type, _max):
@@ -125,13 +124,16 @@ class ValidationEntry(Gtk.Entry):
         old_text = widget.get_text()
         if old_text == '':
             return True  
+        elif old_text == '.':
+            widget.delete_text(pos - 1, pos)
+            return True
         try:
             final_text = ''.join([old_text[:pos - 1], old_text[pos:]])
+            print(final_text)
             if _type == float:
                 temp = float(final_text)
             elif _type == int:
                 temp = int(final_text)
-            pos -= 1
         except ValueError:
             final_text = old_text
         if final_text:
@@ -140,10 +142,8 @@ class ValidationEntry(Gtk.Entry):
                 self.popover.popup()
             else:
                 self.popover.popdown()
-                widget.handler_block_by_func(self.on_insert_text)
-                widget.delete_text(pos, pos + 1)
-                widget.handler_unblock_by_func(self.on_insert_text)
-                GObject.idle_add(widget.set_position, pos)
+                widget.delete_text(pos - 1, pos)
+                GObject.idle_add(widget.set_position, pos - 1)
         widget.emit_stop_by_name("backspace")
         return True
     
