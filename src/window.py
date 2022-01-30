@@ -26,6 +26,7 @@ import dms
 import dmm
 import ddd
 import converter
+import headerbar as hb
 import webbrowser
 
 gi.require_version('Gtk', '3.0')
@@ -61,16 +62,8 @@ class Window(Gtk.Window):
         context = self.get_style_context()
         context.add_class ("rounded")
 
-        '''Here we are creating a new instance of Headerbar 
-        and setting as the titlebar'''
-        # self.hbar = hb.Headerbar(self)
-        # self.set_titlebar(self.hbar)
-        self.headerbar = Gtk.HeaderBar(decoration_layout_set=True, decoration_layout="close:")
-        headerbar_context = self.headerbar.get_style_context()
-        headerbar_context.add_class("flat")
-        self.headerbar.set_show_close_button(True)
-        self.headerbar.props.title = cn.App.application_name
-        self.set_titlebar(self.headerbar)
+        self.hbar = hb.Headerbar(self)
+        self.set_titlebar(self.hbar)
         
         self.set_border_width(80)
         self.set_resizable(False)

@@ -14,6 +14,7 @@ install_data = [
     ('bin/latitude', ['src/coordinate_systems/dmm.py']),
     ('bin/latitude', ['src/coordinate_systems/ddd.py']),
     ('bin/latitude', ['src/coordinate_systems/validation_entry.py']),
+    ('bin/latitude', ['src/headerbar.py']),
     ('bin/latitude', ['src/main.py']),
     ('bin/latitude', ['src/window.py']),
     ('bin/latitude', ['src/__init__.py']),
