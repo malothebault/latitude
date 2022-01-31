@@ -90,6 +90,9 @@ class Headerbar(Gtk.HeaderBar):
         #########################################################
         # Add box put the grid inside and add margin to the box #
         #########################################################
+        pbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        pbox.set_property('margin', 10)
+        self.popover.add(pbox)
         
         grid = Gtk.Grid()
         grid.set_row_spacing(6)
@@ -128,7 +131,8 @@ class Headerbar(Gtk.HeaderBar):
         grid.attach(map_combo, 0, 0, 2, 1)
         grid.attach(self.hbar_theme, 0, 1, 1, 1)
         grid.attach(three, 1, 1, 1, 1)
-        self.popover.add(grid)
+        # self.popover.add(grid)
+        pbox.pack_start(grid, False, False, 0)
     
     def on_hbar_theme_switcher(self, widget):
         theme = self.settings.get_property(
