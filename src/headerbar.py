@@ -87,6 +87,10 @@ class Headerbar(Gtk.HeaderBar):
         self.popover = Gtk.PopoverMenu.new()
         self.popover.set_relative_to(self.button)        
         
+        #########################################################
+        # Add box put the grid inside and add margin to the box #
+        #########################################################
+        
         grid = Gtk.Grid()
         grid.set_row_spacing(6)
         grid.set_column_spacing(12)
