@@ -66,11 +66,6 @@ class Headerbar(Gtk.HeaderBar):
         headerbar_context.add_class("flat")
         self.set_show_close_button(True)
         self.props.title = cn.App.application_name
-
-        '''Here we are setting some parameters for the HeaderBar
-        <https://developer.gnome.org/gtk3/stable/GtkHeaderBar.html>'''
-        self.set_show_close_button(True)
-        self.props.title = cn.App.application_name
         
         '''THEME BUTTON'''
         self.hbar_theme = Gtk.ToolButton()
@@ -80,6 +75,48 @@ class Headerbar(Gtk.HeaderBar):
             self.on_hbar_theme_switcher
         )
         self.pack_end(self.hbar_theme)
+ 
+        #Creating and placing a button
+        self.button = Gtk.ToolButton()
+        self.button.set_icon_name("preferences-system")
+        self.button.connect("clicked", self.on_click)
+        self.pack_end(self.button)
+        
+        #Creating a popover
+        self.popover = Gtk.PopoverMenu.new()
+        self.popover.set_relative_to(self.button)
+        
+        pbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        self.popover.add(pbox)
+        
+        phbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        self.popover.add(phbox)
+        # pbox.pack_end(phbox, False, False, 1)
+        
+        map_providers = [
+            "Google",
+            "OpenStreetMap",
+            "DuckDuckGo",
+            "Qwant"
+        ]
+        self.map_combo = Gtk.ComboBoxText()
+        self.map_combo.set_entry_text_column(0)
+        self.map_combo.connect("changed", self.on_map_combo_changed)
+        for map_provider in map_providers:
+            self.map_combo.append_text(map_provider)
+        self.map_combo.set_active(0)
+        
+        # one = Gtk.ModelButton.new()
+        # one.set_label("Button One")
+        pbox.pack_start(self.map_combo, False, False, 0)
+        
+        two = Gtk.ModelButton.new()
+        two.set_label("Button Two")
+        pbox.pack_start(two, False, False, 0)
+        
+        three = Gtk.ModelButton.new()
+        three.set_label("Button Three")
+        pbox.pack_start(three, False, False, 0)
     
     def on_hbar_theme_switcher(self, widget):
         theme = self.settings.get_property(
@@ -89,3 +126,15 @@ class Headerbar(Gtk.HeaderBar):
             "gtk-application-prefer-dark-theme", 
             not theme # theme is a bool, we are reversing it
         )
+        
+    def on_click(self, button):
+    #Toggle
+        if self.popover.get_visible():
+            self.popover.hide()
+        else:
+            self.popover.show_all()
+            
+    def on_map_combo_changed(self, combo):
+        text = combo.get_active_text()
+        if text is not None:
+            print("Selected: currency=%s" % text)
