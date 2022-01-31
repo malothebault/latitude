@@ -18,6 +18,7 @@
     along with ElementaryPython.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+from ast import Gt
 import gi
 import webbrowser
 import os
@@ -74,7 +75,7 @@ class Headerbar(Gtk.HeaderBar):
             "clicked",
             self.on_hbar_theme_switcher
         )
-        self.pack_end(self.hbar_theme)
+        # self.pack_end(self.hbar_theme)
  
         #Creating and placing a button
         self.button = Gtk.ToolButton()
@@ -84,13 +85,16 @@ class Headerbar(Gtk.HeaderBar):
         
         #Creating a popover
         self.popover = Gtk.PopoverMenu.new()
-        self.popover.set_relative_to(self.button)
+        self.popover.set_relative_to(self.button)        
         
-        pbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        self.popover.add(pbox)
+        grid = Gtk.Grid()
+        grid.set_row_spacing(6)
+        grid.set_column_spacing(12)
+        # pbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        # self.popover.add(pbox)
         
-        phbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        self.popover.add(phbox)
+        # phbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        # self.popover.add(phbox)
         # pbox.pack_end(phbox, False, False, 1)
         
         map_providers = [
@@ -99,24 +103,28 @@ class Headerbar(Gtk.HeaderBar):
             "DuckDuckGo",
             "Qwant"
         ]
-        self.map_combo = Gtk.ComboBoxText()
-        self.map_combo.set_entry_text_column(0)
-        self.map_combo.connect("changed", self.on_map_combo_changed)
+        map_combo = Gtk.ComboBoxText()
+        map_combo.set_entry_text_column(0)
+        map_combo.connect("changed", self.on_map_combo_changed)
         for map_provider in map_providers:
-            self.map_combo.append_text(map_provider)
-        self.map_combo.set_active(0)
+            map_combo.append_text(map_provider)
+        map_combo.set_active(0)
         
         # one = Gtk.ModelButton.new()
         # one.set_label("Button One")
-        pbox.pack_start(self.map_combo, False, False, 0)
+        # pbox.pack_start(self.map_combo, False, False, 0)
         
         two = Gtk.ModelButton.new()
         two.set_label("Button Two")
-        pbox.pack_start(two, False, False, 0)
+        # pbox.pack_start(two, False, False, 0)
         
-        three = Gtk.ModelButton.new()
-        three.set_label("Button Three")
-        pbox.pack_start(three, False, False, 0)
+        three = Gtk.ToolButton()
+        three.set_icon_name("dialog-information")
+        # pbox.pack_start(three, False, False, 0)
+        grid.attach(map_combo, 0, 0, 2, 1)
+        grid.attach(self.hbar_theme, 0, 1, 1, 1)
+        grid.attach(three, 1, 1, 1, 1)
+        self.popover.add(grid)
     
     def on_hbar_theme_switcher(self, widget):
         theme = self.settings.get_property(
