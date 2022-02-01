@@ -17,6 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with ElementaryPython.  If not, see <http://www.gnu.org/licenses/>.
 '''
+
 import gi
 import locale
 import os
@@ -64,6 +65,7 @@ class Window(Gtk.Window):
 
         self.hbar = hb.Headerbar(self)
         self.set_titlebar(self.hbar)
+        self.map_provider = 'OpenStreetMap'
         
         self.set_border_width(80)
         self.set_resizable(False)
@@ -100,10 +102,19 @@ class Window(Gtk.Window):
         
     def on_map_view(self, button):
         ddd = self.ddd_entry.read()
-        link = f"""{'-' if ddd.get('lat')[1] == 'S' else ''}{ddd.get('lat')[0]},{'-' if ddd.get('lon')[1] == 'W' else ''}{ddd.get('lon')[0]}"""
-        webbrowser.open_new_tab(
-                f"https://www.google.com/maps/@{link},10z"
-            )
+        if ddd:
+            if self.map_provider == 'OpenStreetMap':
+                coord = f"""{'-' if ddd.get('lat')[1] == 'S' else ''}{ddd.get('lat')[0]}/{'-' if ddd.get('lon')[1] == 'W' else ''}{ddd.get('lon')[0]}"""
+                link = f"https://www.openstreetmap.org/#map=10/{coord}"
+            elif self.map_provider == 'Google':
+                coord = f"""{'-' if ddd.get('lat')[1] == 'S' else ''}{ddd.get('lat')[0]},{'-' if ddd.get('lon')[1] == 'W' else ''}{ddd.get('lon')[0]}"""
+                link = f"https://www.google.com/maps/@{coord},10z"
+            elif self.map_provider == 'Qwant':
+                coord = f"""{'-' if ddd.get('lat')[1] == 'S' else ''}{ddd.get('lat')[0]}/{'-' if ddd.get('lon')[1] == 'W' else ''}{ddd.get('lon')[0]}"""
+                link = f"https://www.qwant.com/maps#map=15.00/{coord}"
+            else:
+                None
+        webbrowser.open_new_tab(link)
         return True
 
     def on_validate_dms(self, *args):

@@ -41,7 +41,6 @@ class Application(Gtk.Application):
                 
         self.settings = Gio.Settings(schema_id="com.github.malothebault.latitude")
         self.win.move(self.settings.get_int("pos-x"), self.settings.get_int("pos-y"))
-        self.win.resize(self.settings.get_int("window-width"), self.settings.get_int("window-height"))
         self.win.show_all()
 
         Gtk.main()
@@ -49,10 +48,7 @@ class Application(Gtk.Application):
     def delete_window(self, window, event):
         self.settings.set_int("pos-x", self.win.get_position().root_x)
         self.settings.set_int("pos-y", self.win.get_position().root_y)
-
-        self.settings.set_int("window-width", self.win.get_size().width)
-        self.settings.set_int("window-height", self.win.get_size().height)
-                
+        self.settings.set_string("map-provider", self.win.map_provider)        
         Gtk.main_quit()
 
     def on_color_scheme_changed(self, settings, params):

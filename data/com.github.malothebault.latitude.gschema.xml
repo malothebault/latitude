@@ -13,16 +13,10 @@
 			<description>The saved vertical position of the main window</description>
 		</key>
 
-		<key name="window-width" type="i">
-			<default>600</default>
-			<summary>Window width</summary>
-			<description>The saved width of the main window</description>
-		</key>
-
-		<key name="window-height" type="i">
-			<default>400</default>
-			<summary>Window height</summary>
-			<description>The saved height of the main window</description>
+		<key name="map-provider" type="s">
+			<default>'Google'</default>
+			<summary>Map provider</summary>
+			<description>The saved map provider for the 'see on map' function</description>
 		</key>
 	</schema>
 </schemalist>

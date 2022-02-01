@@ -47,67 +47,51 @@ except FileNotFoundError:
 
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, Gio
 
 import constants as cn
 
 class Headerbar(Gtk.HeaderBar):
-
-    '''Getting system default settings'''
-    settings = Gtk.Settings.get_default()
 
     def __init__(self, parent):
 
         Gtk.HeaderBar.__init__(self)
         self.parent = parent
         self._ = _
+        self.settings = Gio.Settings(schema_id="com.github.malothebault.latitude")
         
         # self.headerbar = Gtk.HeaderBar(decoration_layout_set=True, decoration_layout="close:")
         headerbar_context = self.get_style_context()
         headerbar_context.add_class("flat")
         self.set_show_close_button(True)
         self.props.title = cn.App.application_name
-        
-        '''THEME BUTTON'''
-        self.hbar_theme = Gtk.ToolButton()
-        self.hbar_theme.set_icon_name("weather-clear-night") 
-        self.hbar_theme.connect(
-            "clicked",
-            self.on_hbar_theme_switcher
-        )
-        # self.pack_end(self.hbar_theme)
  
         #Creating and placing a button
         self.button = Gtk.ToolButton()
-        self.button.set_icon_name("preferences-system")
+        self.button.set_icon_name("open-menu")
         self.button.connect("clicked", self.on_click)
         self.pack_end(self.button)
         
         #Creating a popover
         self.popover = Gtk.PopoverMenu.new()
         self.popover.set_relative_to(self.button)        
-        
-        #########################################################
-        # Add box put the grid inside and add margin to the box #
-        #########################################################
-        pbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        pbox.set_property('margin', 10)
-        self.popover.add(pbox)
+
+        margin_box = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
+        margin_box.set_property('margin', 10)
+        self.popover.add(margin_box)
         
         grid = Gtk.Grid()
         grid.set_row_spacing(6)
         grid.set_column_spacing(12)
-        # pbox = Gtk.Box(orientation = Gtk.Orientation.VERTICAL)
-        # self.popover.add(pbox)
         
-        # phbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
-        # self.popover.add(phbox)
-        # pbox.pack_end(phbox, False, False, 1)
+        hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
+        
+        label = Gtk.Label(label = _("Map provider : "))
+        label.set_padding(6, 6)
         
         map_providers = [
-            "Google",
             "OpenStreetMap",
-            "DuckDuckGo",
+            "Google",
             "Qwant"
         ]
         map_combo = Gtk.ComboBoxText()
@@ -115,33 +99,28 @@ class Headerbar(Gtk.HeaderBar):
         map_combo.connect("changed", self.on_map_combo_changed)
         for map_provider in map_providers:
             map_combo.append_text(map_provider)
-        map_combo.set_active(0)
+        map_combo.set_active(map_providers.index(self.settings.get_string("map-provider")))
         
-        # one = Gtk.ModelButton.new()
-        # one.set_label("Button One")
-        # pbox.pack_start(self.map_combo, False, False, 0)
+        hbox.pack_start(label, False, False, 0)
+        hbox.pack_start(map_combo, False, False, 0)
         
-        two = Gtk.ModelButton.new()
-        two.set_label("Button Two")
-        # pbox.pack_start(two, False, False, 0)
+        info_button = Gtk.Button(label=_("Geographic Coordinate System"),
+                                 image=Gtk.Image(icon_name="dialog-information",
+                                                 icon_size=Gtk.IconSize.BUTTON),
+                                 always_show_image=True,
+                                 can_focus=False)
+        info_button.set_tooltip_text(_("Get more information about geographic coordinate system"))
+        info_button.connect("clicked", self.on_info_button_clicked)
         
-        three = Gtk.ToolButton()
-        three.set_icon_name("dialog-information")
-        # pbox.pack_start(three, False, False, 0)
-        grid.attach(map_combo, 0, 0, 2, 1)
-        grid.attach(self.hbar_theme, 0, 1, 1, 1)
-        grid.attach(three, 1, 1, 1, 1)
-        # self.popover.add(grid)
-        pbox.pack_start(grid, False, False, 0)
+        grid.attach(hbox, 0, 0, 1, 1)
+        grid.attach(info_button, 0, 1, 1, 1)
+        margin_box.pack_start(grid, False, False, 0)
     
-    def on_hbar_theme_switcher(self, widget):
-        theme = self.settings.get_property(
-            "gtk-application-prefer-dark-theme"
-        )
-        self.settings.set_property(
-            "gtk-application-prefer-dark-theme", 
-            not theme # theme is a bool, we are reversing it
-        )
+    def on_info_button_clicked(self, widget):
+        webbrowser.open_new_tab(
+                f"https://en.wikipedia.org/wiki/Geographic_coordinate_system"
+            )
+        return True
         
     def on_click(self, button):
     #Toggle
@@ -154,3 +133,4 @@ class Headerbar(Gtk.HeaderBar):
         text = combo.get_active_text()
         if text is not None:
             print("Selected: currency=%s" % text)
+            self.parent.map_provider = text
